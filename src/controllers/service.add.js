@@ -79,7 +79,7 @@ module.exports = {
                                 api_key: "68b05b2b5c94606aeeb6aaff983241a04d09f6d41dc3664a3a",
                                 email: email
                             }
-                            axios.post("http://netcrm.develentcorp.com/api/customer/list",
+                            axios.post("http://103.141.78.11/crm/api/customer/list",
                                 qs.stringify(data),
                                 config
                             )
@@ -111,7 +111,7 @@ module.exports = {
                                             next(err);
                                         else {
                                             res.json({ status: "success", message: "Test2 updated successfully!!!", data: service });
-                                            axios.post("http://netcrm.develentcorp.com/api/service/create",
+                                            axios.post("http://103.141.78.11/crm/api/service/create",
                                                 qs.stringify(Body),
                                                 config
 
