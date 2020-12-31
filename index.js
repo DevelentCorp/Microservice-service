@@ -5,6 +5,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const qs = require('querystring');
+const cors = require('cors');
 
 const app = express();
 const router = express.Router();
@@ -18,6 +19,15 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
+
+app.use(cors()) // cool now everything is handled!
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
+
 
 
 if (environment !== 'production') {

@@ -6,7 +6,6 @@ const connUri = process.env.MONGO_LOCAL_CONN_URL;
 const Service = require("../models/service");
 const crypto = require('crypto');
 
-
 const config = {
     headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -27,19 +26,27 @@ module.exports = {
                 let result = {};
                 let status = 201;
                 const payload = req.decoded;
+                console.log(payload);
                 if (payload && payload.user.useraccesslevel === '1') {
-                    axios.get('http://172.105.62.12:8010/api/v1/users/' + payload.user._id)
+                    const token = req.headers.authorization.split(' ')[1];
+                    const config1 = {
+                        headers: {
+                            Authorization: "Bearer " + token
+                        },
+                    };
+                    axios.get('http://172.105.62.12:8001/api/v1/users/' + payload.user._id, config1)
                         .then((response) => {
-                            //console.log(response)
-                            var credits = response.result.credits;
+                            console.log(response.data.result.credits)
+                            const credits = response.data.result.credits;
 
                             const plan = req.body.plan;
-                            let planid;
-                            let subplanid;
-                            let price;
+                            /*let planid = '';
+                            let subplanid = '';
+                            let price = '';*/
                             if (plan === 'TEST-1G') {
-                                planidi = 2
-                                subplanidi = 2
+                                planidi = 2;
+                                subplanidi = 2;
+                                price = 200;
                             } else if (plan === '5Mbps-1month') {
                                 planidi = 40;
                                 subplanidi = 41;
@@ -73,11 +80,11 @@ module.exports = {
                             const prepaid_postpaid = 'Prepaid';
                             const installation_address = 'same';
                             const billing_address = 'same';
-                            const email = req.body.email;
+                            const customerid = req.params.customerid;
                             const data = {
                                 userid: 7,
                                 api_key: "68b05b2b5c94606aeeb6aaff983241a04d09f6d41dc3664a3a",
-                                email: email
+                                customerid: customerid
                             }
                             axios.post("http://103.141.78.11/crm/api/customer/list",
                                 qs.stringify(data),
@@ -88,6 +95,22 @@ module.exports = {
                                     const a = result.data.result[0]
 
                                     const Body = {
+                                        userid: 7,
+                                        api_key: "68b05b2b5c94606aeeb6aaff983241a04d09f6d41dc3664a3a",
+                                        customerid: customerid,
+                                        planid: planid,
+                                        subplanid: subplanid,
+                                        username: a['email'],
+                                        password: password,
+                                        location_code: location_code,
+                                        sub_location_code: sub_location_code,
+                                        protocol: protocol,
+                                        connectivity: connectivity,
+                                        prepaid_postpaid: prepaid_postpaid,
+                                        installation_address: installation_address,
+                                        billing_address: billing_address,
+                                    }
+                                    const service = new Service({
                                         userid: 7,
                                         api_key: "68b05b2b5c94606aeeb6aaff983241a04d09f6d41dc3664a3a",
                                         customerid: a['id'],
@@ -102,14 +125,14 @@ module.exports = {
                                         prepaid_postpaid: prepaid_postpaid,
                                         installation_address: installation_address,
                                         billing_address: billing_address,
-                                    }
-                                    const data = {
+                                    })
+                                    const financial = {
                                         credits: newcredits
                                     }
-                                    Service.save(Body, function (err, service) {
-                                        if (err)
+                                    service.save((err, service) => {
+                                        if (err) {
                                             next(err);
-                                        else {
+                                        } else {
                                             res.json({ status: "success", message: "Test2 updated successfully!!!", data: service });
                                             axios.post("http://103.141.78.11/crm/api/service/create",
                                                 qs.stringify(Body),
@@ -123,9 +146,9 @@ module.exports = {
                                                 .catch((err) => {
                                                     console.log(err);
                                                 });
-                                            axios.put("http://172.105.62.12:8010/api/v1/users/" + payload.user._id,
-                                                qs.stringify(data),
-                                                config
+                                            axios.put("http://172.105.62.12:8001/api/v1/users/" + payload.user._id,
+                                                qs.stringify(financial),
+                                                config1
 
                                             )
                                                 .then((result) => {

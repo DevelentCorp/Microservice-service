@@ -24,6 +24,8 @@ const serviceSchema = new Schema({
     },
     plan: {
         type: String,
+        enum: ['TEST-1G', '5Mbps-1month', '50Mbps-1Month', '100Mbps-1Month', '250Mbps-1month'],
+        default: '5Mbps-1month',
         required: true,
         trim: true
     },

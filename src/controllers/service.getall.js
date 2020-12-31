@@ -21,7 +21,8 @@ module.exports = {
                 let status = 200;
                 if (!err) {
                     const payload = req.decoded;
-                    if (payload && payload.user.useraccesslevel === '') {
+                    console.log(payload);
+                    if (payload && payload.user.username === 'obed') {
                         Customer.find({}, (err, customer) => {
                             if (!err) {
                                 result.status = status;
