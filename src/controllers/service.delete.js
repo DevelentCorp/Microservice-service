@@ -24,7 +24,7 @@ module.exports = {
                         Service.findByIdAndRemove(req.params.customerId, (err, service) => {
                             if (!err) {
                                 result.status = status;
-                                result.result = "Customer Deleted Successfully";
+                                result.result = "Service Deleted Successfully";
                             } else {
                                 status = 500;
                                 result.status = status;
